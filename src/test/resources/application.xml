@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<application>
+  <lastProjectUri>file:/C:/Users/oma/.restui/DEMO.xml</lastProjectUri>
+  <style>default</style>
+  <baseUrls>
+    <baseUrl name="LOC GMS" url="http://192.168.5.11:8080/rest" enabled="false" />
+    <baseUrl name="4.23 GMS" url="http://192.168.4.23:8080" enabled="true" />
+  </baseUrls>
+</application>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="DEMO">
+  <endpoints>
+    <endpoint name="createCustomer" path="/application/customers" method="POST" description="This web service allows to create a new customer.">
+      <parameters>
+        <parameter enabled="false" direction="REQUEST" location="HEADER" type="TEXT" name="Accept" value="application/json,application/vnd.kerlink.iot-v1+json" />
+        <parameter enabled="true" direction="REQUEST" location="BODY" type="TEXT" name="customerDto" value="" />
+        <parameter enabled="true" direction="REQUEST" location="HEADER" type="TEXT" name="Content-Type" value="application/json" />
+      </parameters>
+    </endpoint>
+  </endpoints>
+</project>

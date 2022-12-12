@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox fx:id="rootNode" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.omathe.restui.controller.RequestBodyController">
+	<children>
+		<TableView fx:id="bodyTableView" editable="true" VBox.vgrow="ALWAYS">
+			<columns>
+				<TableColumn fx:id="bodyEnabledColumn" prefWidth="75.0" text="Enabled" />
+				<TableColumn fx:id="bodyTypeColumn" prefWidth="75.0" text="Type" />
+				<TableColumn fx:id="bodyNameColumn" prefWidth="75.0" text="Name" />
+				<TableColumn fx:id="bodyValueColumn" prefWidth="75.0" text="Value" />
+			</columns>
+		</TableView>
+		<TextArea fx:id="requestBody" VBox.vgrow="ALWAYS" />
+	</children>
+</VBox>

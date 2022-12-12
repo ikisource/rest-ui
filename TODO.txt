@@ -1,0 +1,29 @@
+Action: Feature, Fix, Refactor, Test, Configuration, Build, Format
+Scope : application, parameter, endpoint
+
+
+------------------------------------- TODO ------------------------------------
+Refactor : use the http client provided by the JDK (https://www.mkyong.com/java/java-11-httpclient-examples/)
+Feat(project) : color according to project base url
+Feat(project) : save the duration of an exchange
+-------------------------------------------------------------------------------
+
+
+
+---------------------------------- IN PROGRESS --------------------------------
+-------------------------------------------------------------------------------
+
+
+
+------------------------------------- DONE ------------------------------------
+Feat(exchange) : select the first exchange when entering an endpoint
+Feat(application) : add webView
+Feat(project) : count and display the number of endpoints in the project panel
+Fix(parameter) : copy and paste within 2 exchanges
+Fix(endpoint) : encode URI (example: sort=+date)
+
+-------------------------------------------------------------------------------
+
+
+
+

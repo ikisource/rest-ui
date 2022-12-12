@@ -1,0 +1,1 @@
+C:/oma/soft/java/jdk1.8.0_91/bin/java -jar build/libs/RestUI-all-1.3.1.jar

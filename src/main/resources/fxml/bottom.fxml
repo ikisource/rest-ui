@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+
+<HBox fx:id="rootNode" alignment="CENTER_RIGHT" maxHeight="25.0" spacing="5.0" BorderPane.alignment="CENTER" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.omathe.restui.controller.BottomController">
+	<children>
+		<Label fx:id="file" text="&lt;file&gt;">
+			<opaqueInsets>
+				<Insets />
+			</opaqueInsets>
+		</Label>
+		<Label fx:id="baseURL" text="&lt;base URL&gt;" />
+		<Region />
+		<Label fx:id="notification" style="fx-font-weight: bold;" />
+		<Region prefHeight="200.0" prefWidth="200.0" HBox.hgrow="ALWAYS" />
+		<Label fx:id="time" text="&lt;time&gt;" />
+		<Label fx:id="memory" text="&lt;memory&gt;">
+         <tooltip>
+            <Tooltip text="Memory usage" />
+         </tooltip></Label>
+	</children>
+	<BorderPane.margin>
+		<Insets />
+	</BorderPane.margin>
+	<padding>
+		<Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+	</padding>
+</HBox>

@@ -1,0 +1,303 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.String?>
+<?import javafx.collections.FXCollections?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.text.Font?>
+
+<HBox fx:id="rootNode" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.omathe.restui.controller.EndpointController">
+	<children>
+		<VBox HBox.hgrow="ALWAYS">
+			<children>
+				<SplitPane dividerPositions="0.8" orientation="VERTICAL" VBox.vgrow="ALWAYS">
+					<items>
+						<AnchorPane>
+							<children>
+								<VBox prefHeight="315.0" prefWidth="812.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+									<children>
+                              <HBox alignment="CENTER_LEFT" spacing="5.0" VBox.vgrow="NEVER">
+                                 <children>
+                                    <Label text="Mode" />
+                                    <HBox spacing="3.0">
+                                       <children>
+                                          <RadioButton mnemonicParsing="false" onAction="#modeSpecification" selected="true" text="Specification">
+                                             <toggleGroup>
+                                                <ToggleGroup fx:id="endpointMode" />
+                                             </toggleGroup>
+                                          </RadioButton>
+                                          <RadioButton fx:id="radioButtonExecutionMode" mnemonicParsing="false" onAction="#modeExecution" text="Execution" toggleGroup="$endpointMode" />
+                                       </children>
+                                       <HBox.margin>
+                                          <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
+                                       </HBox.margin>
+                                       <padding>
+                                          <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                       </padding>
+                                    </HBox>
+                                 </children>
+                                 <VBox.margin>
+                                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                 </VBox.margin>
+                                 <padding>
+                                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                 </padding>
+                              </HBox>
+                              <HBox fx:id="endpointSpecificationHBox" alignment="CENTER_LEFT" minHeight="30.0" spacing="5.0" VBox.vgrow="NEVER">
+                                 <children>
+                                    <Label fx:id="endpointName" text="Endpoint name" HBox.hgrow="NEVER">
+                                       <font>
+                                          <Font name="System Bold" size="16.0" />
+                                       </font>
+                                    </Label>
+																		<ComboBox fx:id="method" HBox.hgrow="ALWAYS">
+																			<items>
+																				<FXCollections fx:factory="observableArrayList">
+																					<String fx:value="GET" />
+																					<String fx:value="POST" />
+																					<String fx:value="PUT" />
+																					<String fx:value="DELETE" />
+																					<String fx:value="PATCH" />
+																				</FXCollections>
+																			</items>
+																			<value>
+																				<String fx:value="GET" />
+																			</value>
+																		</ComboBox>
+																		<TextField fx:id="path" HBox.hgrow="ALWAYS">
+                                       <HBox.margin>
+                                          <Insets />
+                                       </HBox.margin></TextField>
+                                 </children>
+                                 <padding>
+                                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                 </padding>
+                                 <VBox.margin>
+                                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                 </VBox.margin>
+                              </HBox>
+										<SplitPane fx:id="requestResponseSplitPane" dividerPositions="0.4967948717948718" VBox.vgrow="ALWAYS">
+											<items>
+												<AnchorPane maxWidth="1.7976931348623157E308">
+													<children>
+														<VBox spacing="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+															<children>
+																<Label alignment="CENTER" maxWidth="1.7976931348623157E308" text="Request">
+																	<font>
+																		<Font size="16.0" />
+																	</font>
+																</Label>
+																<SplitPane dividerPositions="0.5" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0" VBox.vgrow="ALWAYS">
+																	<items>
+																		<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
+																			<children>
+																				<VBox prefHeight="259.0" prefWidth="386.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+																					<children>
+																						<Label text="Parameters">
+																							<font>
+																								<Font size="14.0" />
+																							</font>
+																							<padding>
+																								<Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
+																							</padding>
+																						</Label>
+																						<TableView fx:id="requestParameters" editable="true" VBox.vgrow="NEVER">
+																							<columns>
+																								<TableColumn fx:id="parameterEnabledColumn" prefWidth="75.0" text="Enabled" />
+																								<TableColumn fx:id="parameterLocationColumn" prefWidth="75.0" text="Location" />
+																								<TableColumn fx:id="parameterNameColumn" prefWidth="150.0" text="Name" />
+																								<TableColumn fx:id="parameterValueColumn" minWidth="8.0" text="Value" />
+																							</columns>
+																						</TableView>
+																					</children>
+																				</VBox>
+																			</children>
+																		</AnchorPane>
+																		<AnchorPane>
+																			<children>
+																				<VBox AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+																					<children>
+																						<VBox fx:id="bodyVBox" VBox.vgrow="ALWAYS">
+																							<children>
+																								<HBox fx:id="bodyHBox" alignment="CENTER_LEFT" spacing="5.0">
+																									<children>
+																										<Label minWidth="-Infinity" text="Body" HBox.hgrow="ALWAYS" />
+                                                                              <HBox spacing="3.0">
+                                                                                 <children>
+      																										<RadioButton fx:id="rawBody" mnemonicParsing="false" onMouseClicked="#rawBodySelected" selected="true" text="raw">
+      																											<toggleGroup>
+      																												<ToggleGroup fx:id="bodyGroup" />
+      																											</toggleGroup>
+      																										</RadioButton>
+      																										<RadioButton fx:id="formDataBody" mnemonicParsing="false" onMouseClicked="#formDataBodySelected" text="form data" toggleGroup="$bodyGroup" />
+      																										<RadioButton fx:id="formEncodedBody" mnemonicParsing="false" onMouseClicked="#formEncodedBodySelected" text="x-www-form-urlencoded" toggleGroup="$bodyGroup" />
+                                                                                 </children>
+                                                                                 <HBox.margin>
+                                                                                    <Insets />
+                                                                                 </HBox.margin>
+                                                                                 <padding>
+                                                                                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                                                                 </padding>
+                                                                              </HBox>
+																									</children>
+																									<padding>
+																										<Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+																									</padding>
+																								</HBox>
+																							</children>
+																						</VBox>
+																					</children>
+																				</VBox>
+																			</children>
+																		</AnchorPane>
+																	</items>
+																</SplitPane>
+															</children>
+															<padding>
+																<Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+															</padding>
+														</VBox>
+													</children>
+												</AnchorPane>
+												<AnchorPane>
+													<children>
+														<VBox layoutX="-110.0" spacing="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+															<children>
+																<Label alignment="CENTER" maxWidth="1.7976931348623157E308" text="Response">
+																	<font>
+																		<Font size="16.0" />
+																	</font>
+																</Label>
+																<SplitPane dividerPositions="0.5" orientation="VERTICAL">
+																	<items>
+																		<AnchorPane>
+																			<children>
+																				<VBox AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+																					<children>
+																						<Label text="Headers">
+																							<font>
+																								<Font size="14.0" />
+																							</font>
+																							<padding>
+																								<Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
+																							</padding>
+																						</Label>
+																						<TableView fx:id="responseParameters" VBox.vgrow="ALWAYS">
+																							<columns>
+																								<TableColumn fx:id="headerNameColumn" editable="false" prefWidth="130.0" text="Name" />
+																								<TableColumn fx:id="headerValueColumn" editable="false" prefWidth="250.0" text="Value" />
+																							</columns>
+																							<VBox.margin>
+																								<Insets />
+																							</VBox.margin>
+																						</TableView>
+																					</children>
+																				</VBox>
+																			</children>
+																		</AnchorPane>
+																		<AnchorPane>
+																			<children>
+																				<VBox prefHeight="309.0" prefWidth="392.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+																					<children>
+																						<Label text="Body">
+																							<padding>
+																								<Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+																							</padding>
+																						</Label>
+																						<TextArea fx:id="responseBody" editable="false" prefHeight="323.0" prefWidth="392.0" VBox.vgrow="ALWAYS" />
+																					</children>
+																				</VBox>
+																			</children>
+																		</AnchorPane>
+																	</items>
+																</SplitPane>
+															</children>
+															<padding>
+																<Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+															</padding>
+														</VBox>
+													</children>
+													<opaqueInsets>
+														<Insets />
+													</opaqueInsets>
+												</AnchorPane>
+											</items>
+										</SplitPane>
+									</children>
+								</VBox>
+							</children>
+						</AnchorPane>
+						<AnchorPane fx:id="anchorPaneExecute">
+							<children>
+								<VBox prefHeight="899.0" prefWidth="812.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+									<children>
+																						<HBox alignment="CENTER_LEFT" spacing="5.0" VBox.vgrow="NEVER">
+																							<children>
+																								<Button fx:id="execute" mnemonicParsing="false" onAction="#execute" text="Execute" />
+																								<TextField fx:id="uri" editable="false" HBox.hgrow="ALWAYS" />
+																<HBox alignment="CENTER" spacing="5.0">
+																	<children>
+																		<Circle fx:id="statusCircle" fill="#dbe0e4" radius="7.0" stroke="#dbe0e4" strokeType="INSIDE" strokeWidth="0.0">
+																			<HBox.margin>
+																				<Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
+																			</HBox.margin>
+																		</Circle>
+																		<Label text="Status :" />
+																		<Label fx:id="responseStatus" />
+																		<Region HBox.hgrow="ALWAYS" />
+																		<Label text="Duration :" />
+																		<Label fx:id="responseDuration">
+																			<tooltip>
+																				<Tooltip text="Response duration in ms" />
+																			</tooltip>
+																		</Label>
+																	</children>
+																</HBox>
+																							</children>
+                                 <padding>
+                                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                 </padding>
+																						</HBox>
+										<TableView fx:id="exchanges" editable="true" VBox.vgrow="ALWAYS">
+											<columns>
+												<TableColumn fx:id="exchangeNameColumn" maxWidth="1.7976931348623157E308" minWidth="80.0" prefWidth="150.0" text="Name" />
+												<TableColumn fx:id="exchangeDateColumn" editable="false" maxWidth="1.7976931348623157E308" minWidth="60.0" prefWidth="200.0" text="Date" />
+                                    <TableColumn fx:id="exchangeDurationColumn" prefWidth="75.0" text="Duration" />
+                                    <TableColumn fx:id="exchangeStatusColumn" prefWidth="75.0" text="Status" />
+                                    <TableColumn fx:id="exchangeUriColumn" minWidth="100.0" prefWidth="300.0" text="URI" />
+											</columns>
+                                 <VBox.margin>
+                                    <Insets />
+                                 </VBox.margin>
+										</TableView>
+									</children>
+								</VBox>
+							</children>
+						</AnchorPane>
+					</items>
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
+				</SplitPane>
+			</children>
+		</VBox>
+	</children>
+	<padding>
+		<Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+	</padding>
+</HBox>

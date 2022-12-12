@@ -1,0 +1,126 @@
+buildscript {
+    repositories {
+    	mavenCentral()
+    	jcenter()
+    	
+    	maven {
+      		url 'https://sandec.bintray.com/repo'
+    	}
+    }
+    dependencies {
+		classpath 'org.openjfx:javafx-plugin:0.0.8'
+		classpath 'com.sandec.jpro:jpro-plugin-gradle:2019.2.1'
+    }
+}
+
+plugins {
+	id 'application' // uses also plugin 'java'
+    id 'eclipse'
+    id 'org.openjfx.javafxplugin' version '0.0.8'
+    id 'org.beryx.jlink' version '2.17.0'
+}
+
+apply plugin: 'com.sandec.jpro'
+
+group 'fr.omathe.restui'
+project.version '1.3.3'
+
+def jdk = System.getProperty('java.home')
+def moduleName = 'fr.omathe.restui'
+def mainClass = moduleName + '.gui.RestUiApp'
+mainClassName = mainClass
+
+repositories {
+    mavenCentral()
+	jcenter()
+}
+
+javafx {
+	version = '13'
+    modules = [ 'javafx.fxml', 'javafx.web']
+}
+
+task setVersion {
+	doLast {
+		// name version
+		ant.replaceregexp(match:'name = \\".+\\";$', replace:'name = \\"' + project.version + '";', flags:'g', byline:true) {
+        	fileset(dir: 'src/main/java/fr/omathe/restui/model', includes: 'Version.java')
+        }
+        // date
+		ant.replaceregexp(match:'date = \\d+L;', replace:'date = ' + new Date().getTime() + "L;", flags:'g', byline:true) {
+        	fileset(dir: 'src/main/java/fr/omathe/restui/model', includes: 'Version.java')
+    	}
+	}
+}
+
+compileJava {
+	options.encoding = 'UTF-8'
+    options.compilerArgs += ["-parameters"] // name of parameters String name instead of String arg0
+}
+compileJava.dependsOn setVersion
+
+dependencies {
+    compile 'com.sun.jersey:jersey-client:1.9.1'
+    compile 'org.jdom:jdom:2.0.2'
+    compile 'com.fasterxml.jackson.core:jackson-databind:2.8.3'
+}
+
+eclipse {
+	classpath {
+		downloadSources=true
+		containers 'org.eclipse.jdt.launching.JRE_CONTAINER'
+		file {
+			whenMerged {
+				entries.removeAll { it.kind == 'con' && it.path == 'org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-13/' }
+				entries.findAll { it.properties.kind.equals('lib') }.each {
+                    it.entryAttributes['module'] = 'true'
+                }
+			}
+		}
+	}
+}
+
+// create a bundled application
+jlink {
+    options = ['--strip-debug', '--compress', '2', '--no-header-files', '--no-man-pages']
+    
+    mergedModule {
+    	requires 'java.xml';
+    	requires 'java.logging';
+	}
+    
+    launcher {
+        name = project.name
+    }
+}
+
+jpackageImage {
+
+}
+
+task info {
+	Integer i = 20;
+	Integer j = i++;
+	doLast{
+		println "jdk: ${jdk}"
+		println "buildDir: ${buildDir}"
+		println "project.name: ${project.name}"
+		println "project.projectDir: ${project.projectDir}"
+		println "moduleName: ${moduleName}"
+		println "mainClass: ${mainClass}"
+		println "mainClassName: ${mainClassName}"
+		println "File.pathSeparator: ${File.pathSeparator}"
+		println "i: " + i
+		println "j: " + j
+	}
+}
+
+jpro {
+  // for debugging
+  // JVMArgs << '-agentlib:jdwp=transport=dt_socket,server=n,address=5006,suspend=y'
+
+  JVMArgs << '-Xmx1000m'
+
+  //jpro server port
+  port = 8080
+}

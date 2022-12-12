@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<exchanges>
+  <endpoint name="createCustomer">
+    <exchange name="" date="1570109074297" requestBodyType="RAW" status="0" duration="0" uri="">
+      <parameter enabled="false" direction="REQUEST" location="HEADER" type="TEXT" name="Accept" value="application/json,application/vnd.kerlink.iot-v1+json" />
+      <parameter enabled="true" direction="REQUEST" location="BODY" type="TEXT" name="customerDto" value="{&#xA;  &quot;name&quot; : &quot;toto&quot;&#xA;}" />
+      <parameter enabled="true" direction="REQUEST" location="HEADER" type="TEXT" name="Content-Type" value="application/json" />
+      <parameter enabled="true" direction="RESPONSE" location="HEADER" type="TEXT" name="Location" value="" />
+    </exchange>
+  </endpoint>
+</exchanges>

@@ -1,0 +1,186 @@
+.label, .text {
+	//-fx-font-weight: bold;
+	-fx-font-size: 10pt;
+}
+
+
+/*.root {
+    -fx-font-size: 14px;
+    -fx-font-family: sans-serif;
+    -fx-background-color: green;
+}
+
+.tab {
+	-fx-background-color: green;
+}
+
+.vbox {
+    -fx-background-color: #2f4f4f;
+    -fx-padding: 15;
+    -fx-spacing: 10;
+}*/
+
+.tab-pane:top *.tab-header-area {
+    -fx-background-color: red;
+}
+
+
+/*.split-pane {
+	-fx-background-color: green;
+}*/
+
+/*.tree-view {
+	-fx-background-color: green;
+	-fx-opacity: 0.5;
+}*/
+
+/*.pane {
+	-fx-background-color: black;
+}*/
+
+/*#borderPane { 
+    -fx-background-color: #8fbc8f;
+}*/
+
+.button:hover {
+    -fx-background-color: gray;
+}
+
+#newFileButton { 
+    -fx-background-image: url('images/newFile.png');
+    -fx-background-size: 32px;
+    -fx-background-repeat: no-repeat;
+    -fx-background-color: transparent;
+}
+
+#newFileButton:hover {
+	-fx-opacity :1.0
+}
+
+#openFileButton { 
+    -fx-background-image: url('images/openFile.png');
+    -fx-background-size: 32px;
+    -fx-background-repeat: no-repeat;
+    -fx-background-color: transparent;
+}
+
+#openFileButton:hover {
+	-fx-opacity :1.0
+}
+
+#saveFileButton { 
+    -fx-background-image: url('images/saveFile.png');
+    -fx-background-size: 32px;
+    -fx-background-repeat: no-repeat;
+    -fx-background-color: transparent;
+}
+
+#saveFileButton:hover {
+	-fx-opacity :1.0
+}
+
+#saveFileAsButton { 
+    -fx-background-image: url('images/saveFileAs.png');
+    -fx-background-size: 32px;
+    -fx-background-repeat: no-repeat;
+    -fx-background-color: transparent;
+}
+
+#saveFileAsButton:hover {
+	-fx-opacity :1.0
+}
+
+#deleteFileButton { 
+    -fx-background-image: url('images/deleteFile.png');
+    -fx-background-size: 32px;
+    -fx-background-repeat: no-repeat;
+    -fx-background-color: transparent;
+}
+
+#deleteFileButton:hover {
+	-fx-opacity :1.0
+}
+
+#exitButton { 
+    -fx-background-image: url('images/exit.png');
+    -fx-background-size: 32px;
+    -fx-background-repeat: no-repeat;
+    -fx-background-color: transparent;
+}
+
+#exitButton:hover {
+	-fx-opacity :1.0
+}
+
+#importEndpointsButton { 
+    -fx-background-image: url('images/importEndpoints.png');
+    -fx-background-size: 32px;
+    -fx-background-repeat: no-repeat;
+    -fx-background-color: transparent;
+}
+
+#importEndpointsButton:hover {
+	-fx-opacity :1.0
+}
+
+#minusButton { 
+    -fx-background-image: url('images/minus.png');
+    -fx-background-size: 16px;
+    -fx-background-repeat: no-repeat;
+    -fx-background-color: transparent;
+}
+
+#minusButton:hover {
+	-fx-opacity :1.0
+}
+
+#aboutButton { 
+    -fx-background-image: url('images/about.png');
+    -fx-background-size: 32px;
+    -fx-background-repeat: no-repeat;
+    -fx-background-color: transparent;
+}
+
+#aboutButton:hover {
+	-fx-opacity :1.0
+}
+
+#tabPane1 .tab-header-background {
+    -fx-background-color: #f1f1f1;
+}
+
+#imageViewPath {
+    -fx-image: url("images/path.png");
+}
+
+#imageViewEndpoint {
+    -fx-image: url("images/endpoint.png");
+}
+
+.tree-cell > .tree-disclosure-node > .arrow  {
+    -fx-background-color: gray;
+}
+
+.tree-cell:expanded > .tree-disclosure-node > .arrow {
+    -fx-background-color: blue;
+}
+
+.tooltip {
+   -fx-background: gray;
+    -fx-text-fill: white;
+    -fx-background-color: rgba(30,30,30,0.8);
+    -fx-background-radius: 6px;
+    -fx-background-insets: 0;
+    -fx-padding: 0.667em 0.75em 0.667em 0.75em; /* 10px */
+    -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.5) , 10, 0.0 , 0 , 3 );
+    -fx-font-size: 1.0em;
+}
+
+#logsArea {
+	-fx-control-inner-background:#000000;
+	-fx-font-family: Consolas;
+	-fx-highlight-fill: #00ff00;
+	-fx-highlight-text-fill: #000000;
+	-fx-text-fill: #00ff00;
+	-fx-background-color:#000000;
+}
