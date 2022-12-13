@@ -26,9 +26,9 @@
 
 <!-- version scene builder -->
 <!-- <BorderPane id="borderPane" fx:id="rootNode" prefHeight="600.0" prefWidth="800.0" stylesheets="@../style/default/stylesheet.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" 
-	fx:controller="fr.omathe.restui.controller.MainController"> -->
+	fx:controller="controller.fr.ikisource.restui.MainController"> -->
 
-<BorderPane id="borderPane" fx:id="rootNode" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.omathe.restui.controller.MainController">
+<BorderPane id="borderPane" fx:id="rootNode" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.ikisource.restui.controller.MainController">
 	<top>
 		<VBox styleClass="vbox" BorderPane.alignment="CENTER">
 			<children>
@@ -271,10 +271,10 @@
 
 	<bottom>
 		<!-- IDE version -->
-<!--   		<fx:include fx:id="bottom" source="/fxml/bottom.fxml" /> -->
+   		<fx:include fx:id="bottom" source="/fxml/bottom.fxml" />
 
 		<!-- scene builder version -->
-    		<fx:include fx:id="bottom" source="bottom.fxml" />
+<!--    		<fx:include fx:id="bottom" source="bottom.fxml" />-->
 
 	</bottom>
 

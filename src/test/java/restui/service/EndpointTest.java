@@ -1,9 +1,13 @@
 package restui.service;
 
+import org.junit.jupiter.api.Test;
+
 public class EndpointTest {
 
-//	@Test
-//	public void getPaths() {
+	@Test
+	public void getPaths() {
+
+    }
 //
 //		Endpoint endpoint = new Endpoint("getPerson", "/persons/{id}", "GET");
 //		List<String> paths = endpoint.getPaths();
