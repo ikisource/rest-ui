@@ -1,6 +1,9 @@
 package fr.ikisource.restui.model;
 
+import java.net.URI;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -18,208 +21,226 @@ import javafx.collections.FXCollections;
 
 public class Exchange implements Parameterisable {
 
-	public enum BodyType {
-		RAW, X_WWW_FORM_URL_ENCODED, FORM_DATA;
-	}
+    private final StringProperty name;
+    private final ObjectProperty<Long> date;
+    private final IntegerProperty status;
+    private final IntegerProperty duration;
+    private final StringProperty uri;
+    private BodyType requestBodyType;
+    private List<Parameter> parameters;
+    public Exchange(final String name, final Long date) {
+        super();
+        this.name = new SimpleStringProperty(name);
+        this.date = new SimpleObjectProperty<>(date);
+        this.status = new SimpleIntegerProperty();
+        this.duration = new SimpleIntegerProperty();
+        this.requestBodyType = BodyType.RAW;
+        this.uri = new SimpleStringProperty("");
+        this.parameters = FXCollections.observableArrayList();
+    }
 
-	private final StringProperty name;
-	private final ObjectProperty<Long> date;
-	private final IntegerProperty status;
-	private final IntegerProperty duration;
-	private BodyType requestBodyType;
-	private final StringProperty uri;
-	private List<Parameter> parameters;
+    public Exchange(final String endpointName, final String name, final Long date, final Integer duration, final Integer status, final BodyType requestBodyType) {
+        super();
+        this.name = new SimpleStringProperty(name);
+        this.date = new SimpleObjectProperty<>(date);
+        this.status = new SimpleIntegerProperty(status);
+        this.duration = new SimpleIntegerProperty(duration);
+        this.requestBodyType = requestBodyType;
+        this.uri = new SimpleStringProperty("");
+        this.parameters = FXCollections.observableArrayList();
+    }
 
-	public Exchange(final String name, final Long date) {
-		super();
-		this.name = new SimpleStringProperty(name);
-		this.date = new SimpleObjectProperty<>(date);
-		this.status = new SimpleIntegerProperty();
-		this.duration = new SimpleIntegerProperty();
-		this.requestBodyType = BodyType.RAW;
-		this.uri = new SimpleStringProperty("");
-		this.parameters = FXCollections.observableArrayList();
-	}
+    public static Exchange buildWorkingExchange() {
 
-	public Exchange(final String endpointName, final String name, final Long date, final Integer duration, final Integer status, final BodyType requestBodyType) {
-		super();
-		this.name = new SimpleStringProperty(name);
-		this.date = new SimpleObjectProperty<>(date);
-		this.status = new SimpleIntegerProperty(status);
-		this.duration = new SimpleIntegerProperty(duration);
-		this.requestBodyType = requestBodyType;
-		this.uri = new SimpleStringProperty("");
-		this.parameters = FXCollections.observableArrayList();
-	}
+        return new Exchange("", Instant.now().toEpochMilli());
+    }
 
-	public Exchange duplicate(final String name) {
-		final Exchange duplicate = new Exchange(name, Instant.now().toEpochMilli());
+    public Exchange duplicate(final String name) {
+        final Exchange duplicate = new Exchange(name, Instant.now().toEpochMilli());
 
-		duplicate.addParameters(parameters.stream().map(p -> p.duplicate()).collect(Collectors.toList()));
-		duplicate.setUri(uri.get());
-		duplicate.setDuration(duration.get());
-		duplicate.setStatus(status.get());
+        duplicate.addParameters(parameters.stream().map(p -> p.duplicate()).collect(Collectors.toList()));
+        duplicate.setUri(uri.get());
+        duplicate.setDuration(duration.get());
+        duplicate.setStatus(status.get());
 
-		return duplicate;
-	}
+        return duplicate;
+    }
 
-	public static Exchange buildWorkingExchange() {
+    public void updateValues(final Exchange source) {
+        setDate(source.getDate());
+        setStatus(source.getStatus());
+        setDuration(source.getDuration());
+        setRequestBodyType(source.getRequestBodyType());
+        setUri(source.getUri());
+        setParameters(source.getParameters());
+    }
 
-		return new Exchange("", Instant.now().toEpochMilli());
-	}
+    public String getName() {
+        return name.get();
+    }
 
-	public void updateValues(final Exchange source) {
-		setDate(source.getDate());
-		setStatus(source.getStatus());
-		setDuration(source.getDuration());
-		setRequestBodyType(source.getRequestBodyType());
-		setUri(source.getUri());
-		setParameters(source.getParameters());
-	}
+    public void setName(final String name) {
+        this.name.set(name);
+    }
 
-	public String getName() {
-		return name.get();
-	}
+    public StringProperty nameProperty() {
+        return name;
+    }
 
-	public void setName(final String name) {
-		this.name.set(name);
-	}
+    public Long getDate() {
+        return date.get();
+    }
 
-	public StringProperty nameProperty() {
-		return name;
-	}
+    public void setDate(final Long date) {
+        this.date.set(date);
+    }
 
-	public Long getDate() {
-		return date.get();
-	}
+    public ObjectProperty<Long> dateProperty() {
+        return date;
+    }
 
-	public void setDate(final Long date) {
-		this.date.set(date);
-	}
+    @Override
+    public List<Parameter> getParameters() {
+        return parameters;
+    }
 
-	public ObjectProperty<Long> dateProperty() {
-		return date;
-	}
+    public void setParameters(final List<Parameter> parameters) {
+        this.parameters = parameters;
+    }
 
-	@Override
-	public List<Parameter> getParameters() {
-		return parameters;
-	}
+    public String getResponseBody() {
 
-	public void setParameters(final List<Parameter> parameters) {
-		this.parameters = parameters;
-	}
+        String responseBody = "";
+        final Optional<Parameter> rawBody = parameters.stream()
+                .filter(p -> p.getDirection().equals(Direction.RESPONSE.name()))
+                .filter(p -> p.getLocation().equals(Location.BODY.name()))
+                .filter(p -> p.getType().equals(Type.TEXT.name()))
+                .findFirst();
+        if (rawBody.isPresent()) {
+            responseBody = rawBody.get().getValue();
+        }
+        return responseBody;
+    }
 
-	public String getResponseBody() {
+    public void clearResponseParameters() {
+        parameters.removeIf(p -> p.isResponseParameter());
+    }
 
-		String responseBody = "";
-		final Optional<Parameter> rawBody = parameters.stream()
-				.filter(p -> p.getDirection().equals(Direction.RESPONSE.name()))
-				.filter(p -> p.getLocation().equals(Location.BODY.name()))
-				.filter(p -> p.getType().equals(Type.TEXT.name()))
-				.findFirst();
-		if (rawBody.isPresent()) {
-			responseBody = rawBody.get().getValue();
-		}
-		return responseBody;
-	}
+    public Optional<Parameter> findParameter(final Direction direction, final Location location, final String name) {
 
-	public void clearResponseParameters() {
-		parameters.removeIf(p -> p.isResponseParameter());
-	}
+        return parameters.stream()
+                .filter(p -> p.getDirection().equals(direction.name()) && p.getLocation().equals(location.name()) && p.getName().equalsIgnoreCase(name))
+                .findFirst();
+    }
 
-	public Optional<Parameter> findParameter(final Direction direction, final Location location, final String name) {
+    public BodyType getRequestBodyType() {
+        return requestBodyType;
+    }
 
-		return parameters.stream()
-				.filter(p -> p.getDirection().equals(direction.name()) && p.getLocation().equals(location.name()) && p.getName().equalsIgnoreCase(name))
-				.findFirst();
-	}
+    public void setRequestBodyType(final BodyType requestBodyType) {
+        this.requestBodyType = requestBodyType;
+    }
 
-	public BodyType getRequestBodyType() {
-		return requestBodyType;
-	}
+    public boolean hasBodyTypeOfXWwwFormUrlencoded() {
+        return requestBodyType.equals(Exchange.BodyType.X_WWW_FORM_URL_ENCODED);
+    }
 
-	public void setRequestBodyType(final BodyType requestBodyType) {
-		this.requestBodyType = requestBodyType;
-	}
+    public String getUri() {
+        return uri.get();
+    }
 
-	public String getUri() {
-		return uri.get();
-	}
+    public void setUri(final String uri) {
+        this.uri.set(uri);
+    }
 
-	public void setUri(final String uri) {
-		this.uri.set(uri);
-	}
+    public URI getEncodedUri() {
+        return URI.create(uri.get().replaceAll(" ", "%20"));
+    }
 
-	public StringProperty uriProperty() {
-		return uri;
-	}
+    public StringProperty uriProperty() {
+        return uri;
+    }
 
-	public IntegerProperty statusProperty() {
-		return status;
-	}
+    public IntegerProperty statusProperty() {
+        return status;
+    }
 
-	public Integer getStatus() {
-		return status.get();
-	}
+    public Integer getStatus() {
+        return status.get();
+    }
 
-	public void setStatus(final Integer status) {
-		this.status.set(status);
-	}
+    public void setStatus(final Integer status) {
+        this.status.set(status);
+    }
 
-	public IntegerProperty durationProperty() {
-		return duration;
-	}
+    public IntegerProperty durationProperty() {
+        return duration;
+    }
 
-	public Integer getDuration() {
-		return duration.get();
-	}
+    public Integer getDuration() {
+        return duration.get();
+    }
 
-	public void setDuration(final Integer duration) {
-		this.duration.set(duration);
-	}
+    public void setDuration(final Integer duration) {
+        this.duration.set(duration);
+    }
 
-	public boolean isEmpty() {
-		return parameters == null || parameters.isEmpty();
-	}
+    public boolean isEmpty() {
+        return parameters == null || parameters.isEmpty();
+    }
 
-	public boolean isWorking() {
-		return name.get().isEmpty();
-	}
+    public boolean isWorking() {
+        return name.get().isEmpty();
+    }
 
-	public boolean isFinalized() {
+    public boolean isFinalized() {
 
-		return status.get() != 0 && !name.get().isEmpty();
-	}
-	
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((name == null) ? 0 : name.hashCode());
-		return result;
-	}
+        return status.get() != 0 && !name.get().isEmpty();
+    }
 
-	@Override
-	public boolean equals(final Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null) {
-			return false;
-		}
-		if (getClass() != obj.getClass()) {
-			return false;
-		}
-		Exchange other = (Exchange) obj;
-		if (name == null) {
-			if (other.name != null) {
-				return false;
-			}
-		} else if (!name.get().equalsIgnoreCase(other.name.get())) {
-			return false;
-		}
-		return true;
-	}
+    public String[] requestHeaders() {
+        List<String> list = new ArrayList<>();
+        parameters.stream()
+                .filter(Parameter::getEnabled)
+                .filter(Parameter::isRequestHeader)
+                .forEach(p -> {
+                    list.add(p.getName());
+                    list.add(p.getValue());
+                });
+        return list.toArray(String[]::new);
+    }
 
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((name == null) ? 0 : name.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        Exchange other = (Exchange) obj;
+        if (name == null) {
+            if (other.name != null) {
+                return false;
+            }
+        } else if (!name.get().equalsIgnoreCase(other.name.get())) {
+            return false;
+        }
+        return true;
+    }
+
+    public enum BodyType {
+        RAW, X_WWW_FORM_URL_ENCODED, FORM_DATA;
+    }
 }

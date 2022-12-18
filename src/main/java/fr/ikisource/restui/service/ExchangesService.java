@@ -101,7 +101,7 @@ public class ExchangesService {
 			}
 		} catch (final Exception e) {
 			Logger.error(e);
-			Notifier.notifyError(e.getMessage());
+			//Notifier.notifyError(e.getMessage());
 			throw new TechnicalException(e.getMessage());
 		}
 	}

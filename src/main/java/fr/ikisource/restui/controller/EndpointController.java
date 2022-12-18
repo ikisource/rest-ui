@@ -42,7 +42,7 @@ import javafx.scene.shape.Circle;
 import javafx.stage.FileChooser;
 import javafx.util.converter.DefaultStringConverter;
 
-import javax.ws.rs.core.Response;
+//import javax.ws.rs.core.Response;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
@@ -323,9 +323,9 @@ public class EndpointController implements Initializable {
 						setText(null);
 						setStyle("");
 					} else {
-						final SimpleDateFormat formater = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+						final SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 						// retrieve date from Exchange
-						setText(formater.format(new Date(item)));
+						setText(formatter.format(new Date(item)));
 					}
 				}
 			};
@@ -483,7 +483,7 @@ public class EndpointController implements Initializable {
 		currentExchange.setStatus(0);
 		final long t0 = System.currentTimeMillis();
 
-		HttpResponse response = null;
+		HttpResponse<byte[]> response;
 		Integer duration = 0;
 		try {
 			response = RestClient.execute(method.getValue(), currentExchange);
@@ -543,54 +543,38 @@ public class EndpointController implements Initializable {
 		requestBody(BodyType.FORM_DATA);
 	}
 
-	private void buildResponseBody(final HttpResponse response) {
-
+	private void buildResponseBody(final HttpResponse<byte[]> response) {
 		responseBody.setText("");
-/*TODO		if (response != null && response.statusCode() != 204) {
+		if (response != null && response.statusCode() != 204) {
+			byte[] bytes = response.body();
+			if (bytes != null && bytes.length > 0) {
+				final String output = new String(bytes, StandardCharsets.UTF_8);
 
-			try (InputStream inputStream = response. getEntityInputStream()) {
+				if (output != null && !output.isEmpty()) {
 
-				if (inputStream != null) {
-					byte[] bytes = Tools.getBytes(inputStream);
+					Optional<Parameter> contentDisposition = currentExchange.findParameter(Direction.RESPONSE, Location.HEADER, "Content-Disposition");
 
-					if (bytes != null && bytes.length > 0) {
-						final String output = new String(bytes, StandardCharsets.UTF_8);
+					if (contentDisposition.isPresent() && contentDisposition.get().getValue().toLowerCase().contains("attachment")) {
+						// the response contains the Content-Disposition header and attachment key word
 
-						if (output != null && !output.isEmpty()) {
+						final FileChooser fileChooser = new FileChooser();
+						fileChooser.setTitle("Save the file");
 
-							Optional<Parameter> contentDisposition = currentExchange.findParameter(Direction.RESPONSE, Location.HEADER, "Content-Disposition");
+						final File initialDirectory = new File(System.getProperty("user.home"));
+						fileChooser.setInitialDirectory(initialDirectory);
 
-							if (contentDisposition.isPresent() && contentDisposition.get().getValue().toLowerCase().contains("attachment")) {
-								// the response contains the Content-Disposition header and attachment key word
-
-								final FileChooser fileChooser = new FileChooser();
-								fileChooser.setTitle("Save the file");
-
-								final File initialDirectory = new File(System.getProperty("user.home"));
-								fileChooser.setInitialDirectory(initialDirectory);
-
-								String fileName = Tools.findFileName(contentDisposition.get().getValue());
-								fileChooser.setInitialFileName(fileName);
-								final File file = fileChooser.showSaveDialog(null);
-								Tools.writeBytesToFile(file, bytes);
-							} else {
-								// response body
-								final Parameter responseBody = new Parameter(Boolean.TRUE, Direction.RESPONSE, Location.BODY, Type.TEXT, null, output);
-								currentExchange.addParameter(responseBody);
-							}
-						}
+						String fileName = Tools.findFileName(contentDisposition.get().getValue());
+						fileChooser.setInitialFileName(fileName);
+						final File file = fileChooser.showSaveDialog(null);
+						Tools.writeBytesToFile(file, bytes);
+					} else {
+						// response body
+						final Parameter responseBody = new Parameter(Boolean.TRUE, Direction.RESPONSE, Location.BODY, Type.TEXT, null, output);
+						currentExchange.addParameter(responseBody);
 					}
-				}
-			} catch (IOException e) {
-				Logger.error(e);
-				Notifier.notifyError(e.getMessage());
-			} finally {
-				if (response != null) {
-					response.close();
 				}
 			}
 		}
- */
 	}
 
 	private void displayStatusCircle(final Exchange exchange) {

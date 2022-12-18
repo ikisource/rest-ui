@@ -145,6 +145,10 @@ public class Parameter {
 		return direction != null && direction.get().equals(Direction.REQUEST.name());
 	}
 
+	public boolean isRequestHeader() {
+		return direction != null && direction.get().equals(Direction.REQUEST.name()) && location.get().equals(Location.HEADER.name());
+	}
+
 	public boolean isResponseParameter() {
 		return direction != null && direction.get().equals(Direction.RESPONSE.name());
 	}
