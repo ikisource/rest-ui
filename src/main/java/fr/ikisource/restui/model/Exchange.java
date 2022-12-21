@@ -3,7 +3,6 @@ package fr.ikisource.restui.model;
 import java.net.URI;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -28,6 +27,7 @@ public class Exchange implements Parameterisable {
     private final StringProperty uri;
     private BodyType requestBodyType;
     private List<Parameter> parameters;
+
     public Exchange(final String name, final Long date) {
         super();
         this.name = new SimpleStringProperty(name);
@@ -208,6 +208,12 @@ public class Exchange implements Parameterisable {
                     list.add(p.getValue());
                 });
         return list.toArray(String[]::new);
+    }
+
+    public void createOrUpdateParameter(Boolean enabled, Direction direction, Location location, Type type, String name, String value) {
+        Parameter parameter = new Parameter(enabled, direction, location, type, name, value);
+        parameters.remove(parameter);
+        parameters.add(parameter);
     }
 
     @Override

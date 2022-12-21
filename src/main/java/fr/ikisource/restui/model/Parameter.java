@@ -253,7 +253,7 @@ public class Parameter {
 			if (other.name.get() != null) {
 				return false;
 			}
-		} else if (!name.get().equals(other.name.get())) {
+		} else if (!name.get().equalsIgnoreCase(other.name.get())) {
 			return false;
 		}
 		if (type.get() == null) {

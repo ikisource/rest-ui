@@ -2,7 +2,6 @@ package fr.ikisource.restui.service;
 
 import java.io.*;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.net.http.HttpRequest;
 import java.net.http.HttpRequest.BodyPublishers;
@@ -26,7 +25,6 @@ import java.net.http.HttpClient;
 //import com.sun.jersey.client.urlconnection.URLConnectionClientHandler;
 //import com.sun.jersey.core.util.MultivaluedMapImpl;
 
-import fr.ikisource.restui.conf.App;
 import fr.ikisource.restui.exception.ClientException;
 import fr.ikisource.restui.model.Exchange;
 import fr.ikisource.restui.model.Parameter;
@@ -48,42 +46,45 @@ public class RestClient {
         HttpResponse<byte[]> response = null;
 
         switch (method) {
-            case "POST":
+            case "GET" -> {
+                response = get(exchange);
+            }
+            case "POST" -> {
                 try {
                     response = post(exchange);
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
-                break;
-            case "GET":
-                response = get(exchange);
-                break;
-//		case "PUT":
-//			response = put(exchange);
-//			break;
-//		case "PATCH":
-//			response = patch(exchange);
-//			break;
-//		case "DELETE":
-//			response = delete(exchange);
-//			break;
-
-            default:
-                break;
+            }
+            case "PUT" -> {
+                try {
+                    response = put(exchange);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
         }
+
         return response;
+    }
+
+    private static HttpRequest.Builder requestBuilder(Exchange exchange) {
+        HttpRequest.Builder builder = HttpRequest.newBuilder()
+                .version(HttpClient.Version.HTTP_2)
+                .uri(exchange.getEncodedUri());
+        if (exchange.requestHeaders().length >= 2) {
+            builder.headers(exchange.requestHeaders());
+        }
+        return builder;
     }
 
     private static HttpResponse<byte[]> get(final Exchange exchange) throws ClientException {
 
         HttpResponse<byte[]> response;
         try {
-            HttpRequest request = HttpRequest.newBuilder()
-                    .version(HttpClient.Version.HTTP_2)
-                    .uri(exchange.getEncodedUri())
-                    .headers(exchange.requestHeaders())
-                    .GET()
-                    .build();
+            HttpRequest.Builder builder = requestBuilder(exchange)
+                    .GET();
+            HttpRequest request = builder.build();
             response = client.send(request, HttpResponse.BodyHandlers.ofByteArray());
         } catch (final IOException | InterruptedException e) {
             Logger.error(e);
@@ -101,11 +102,59 @@ public class RestClient {
 //		client.setReadTimeout(duration == null ? App.DEFAULT_READ_TIMEOUT : duration);
 //	}
 
-    private static HttpResponse post(final Exchange exchange) throws Exception {
+    private static HttpResponse<byte[]> post(final Exchange exchange) throws Exception {
+
+        HttpResponse<byte[]> response = null;
+        List<Parameter> parameters = exchange.getParameters().stream().filter(p -> p.getEnabled()).collect(Collectors.toList());
+
+        HttpRequest.BodyPublisher bodyPublisher = null;
+        switch (exchange.getRequestBodyType()) {
+            case X_WWW_FORM_URL_ENCODED -> {
+                String body = parameters.stream()
+                        .filter(p -> p.getEnabled() && p.isBodyParameter() && p.isTypeText())
+                        .map(p -> encode(p.getName()) + "=" + encode(p.getValue()))
+                        .collect(Collectors.joining("&"));
+                Optional<Parameter> optional = exchange.findParameter(Direction.REQUEST, Location.HEADER, "Content-Type");
+                if (optional.isPresent()) {
+                    parameters.remove(optional.get());
+                }
+                parameters.add(new Parameter(Boolean.TRUE, Direction.REQUEST, Location.HEADER, Type.TEXT, "Content-Type", "application/x-www-form-urlencoded"));
+                bodyPublisher = BodyPublishers.ofInputStream(() -> new ByteArrayInputStream(body.getBytes()));
+            }
+            case RAW -> {
+                bodyPublisher = BodyPublishers.ofInputStream(() -> new ByteArrayInputStream(exchange.getRequestRawBody().getBytes()));
+            }
+            case FORM_DATA -> {
+                exchange.createOrUpdateParameter(true, Direction.REQUEST, Location.HEADER, Type.TEXT, "Content-Type", "multipart/form-data; boundary=" + BOUNDARY);
+                ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                bodyPublisher = HttpRequest.BodyPublishers.ofString("");
+                for (Parameter parameter : parameters) {
+                    if (parameter.getEnabled() && parameter.isBodyParameter() && parameter.getType().equals(Type.TEXT.name())) {
+                        addMultipartTextParameter(bos, parameter);
+                    } else if (parameter.getEnabled() && parameter.isBodyParameter() && parameter.getType().equals(Type.FILE.name())) {
+                        addMultipartFileParameter(bos, parameter);
+                    }
+                }
+                bos.write(new String(CLOSE_BOUNDARY + LINE_FEED).getBytes());
+                bos.flush();
+                bos.close();
+                bodyPublisher = BodyPublishers.ofByteArray(bos.toByteArray());
+            }
+            default -> HttpRequest.BodyPublishers.noBody();
+        }
+        HttpRequest.Builder builder = requestBuilder(exchange)
+                .POST(bodyPublisher);
+        HttpRequest request = builder.build();
+        response = client.send(request, HttpResponse.BodyHandlers.ofByteArray());
+
+        return response;
+    }
+
+
+	private static HttpResponse put(final Exchange exchange) throws Exception {
 
         HttpResponse response = null;
         List<Parameter> parameters = exchange.getParameters().stream().filter(p -> p.getEnabled()).collect(Collectors.toList());
-
         HttpRequest.BodyPublisher bodyPublisher = null;
         switch (exchange.getRequestBodyType()) {
             case X_WWW_FORM_URL_ENCODED -> {
@@ -134,23 +183,24 @@ public class RestClient {
                 bodyPublisher = HttpRequest.BodyPublishers.ofString("");
                 for (Parameter parameter : parameters) {
                     if (parameter.getEnabled() && parameter.isBodyParameter() && parameter.getType().equals(Type.TEXT.name())) {
-                        addMultiparTextParameter(bos, parameter);
+                        addMultipartTextParameter(bos, parameter);
                     } else if (parameter.getEnabled() && parameter.isBodyParameter() && parameter.getType().equals(Type.FILE.name())) {
-                        addMultiparFileParameter(bos, parameter);
+                        addMultipartFileParameter(bos, parameter);
                     }
                 }
                 bos.write(new String(CLOSE_BOUNDARY + LINE_FEED).getBytes());
+                bos.flush();
+                bos.close();
                 bodyPublisher = BodyPublishers.ofByteArray(bos.toByteArray());
+
             }
             default -> HttpRequest.BodyPublishers.noBody();
         }
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(exchange.getEncodedUri())
-                .headers(exchange.requestHeaders())
-                .POST(bodyPublisher)
-                .build();
+        return response;
 
-		/*String body = null;
+		/*ClientResponse response = null;
+
+		String body = null;
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 
 		try {
@@ -169,7 +219,9 @@ public class RestClient {
 				}
 				parameters.add(new Parameter(Boolean.TRUE, Direction.REQUEST, Location.HEADER, Type.TEXT, "Content-Type", "application/x-www-form-urlencoded"));
 
-				bos.write(new String(body).getBytes());
+				if (body != null) {
+					bos.write(new String(body).getBytes());
+				}
 
 			} else if (exchange.getRequestBodyType().equals(Exchange.BodyType.RAW)) {
 				body = exchange.getRequestRawBody();
@@ -195,7 +247,7 @@ public class RestClient {
 			}
 			addHeaders(builder, parameters);
 			bos.flush();
-			response = builder.post(ClientResponse.class, bos.toByteArray());
+			response = builder.put(ClientResponse.class, bos.toByteArray());
 		} catch (final Exception e) {
 			Logger.error(e);
 			Notifier.notifyError(e.getMessage());
@@ -210,82 +262,10 @@ public class RestClient {
 					Notifier.notifyError(e.getMessage());
 				}
 			}
-		}*/
+		}
+		return response;*/
+	}
 
-        return response;
-    }
-
-    //
-//	private static ClientResponse put(final Exchange exchange) throws ClientException {
-//
-//		ClientResponse response = null;
-//
-//		String body = null;
-//		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-//
-//		try {
-//			String uri = exchange.getUri();
-//			List<Parameter> parameters = exchange.getParameters().stream().filter(p -> p.getEnabled()).collect(Collectors.toList());
-//
-//			final WebResource webResource = client.resource(uriWithoutQueryParams(uri)).queryParams(buildParams(parameters));
-//			final WebResource.Builder builder = webResource.getRequestBuilder();
-//
-//			if (exchange.getRequestBodyType().equals(Exchange.BodyType.X_WWW_FORM_URL_ENCODED)) {
-//				body = parameters.stream().filter(p -> p.getEnabled() && p.isBodyParameter() && p.isTypeText()).map(p -> encode(p.getName()) + "=" + encode(p.getValue())).collect(Collectors.joining("&"));
-//
-//				Optional<Parameter> optional = exchange.findParameter(Direction.REQUEST, Location.HEADER, "Content-Type");
-//				if (optional.isPresent()) {
-//					parameters.remove(optional.get());
-//				}
-//				parameters.add(new Parameter(Boolean.TRUE, Direction.REQUEST, Location.HEADER, Type.TEXT, "Content-Type", "application/x-www-form-urlencoded"));
-//
-//				if (body != null) {
-//					bos.write(new String(body).getBytes());
-//				}
-//
-//			} else if (exchange.getRequestBodyType().equals(Exchange.BodyType.RAW)) {
-//				body = exchange.getRequestRawBody();
-//				if (body != null) {
-//					bos.write(new String(body).getBytes());
-//				}
-//
-//			} else if (exchange.getRequestBodyType().equals(Exchange.BodyType.FORM_DATA)) {
-//				Optional<Parameter> optional = exchange.findParameter(Direction.REQUEST, Location.HEADER, "Content-Type");
-//				if (optional.isPresent()) {
-//					parameters.remove(optional.get());
-//				}
-//				parameters.add(new Parameter(Boolean.TRUE, Direction.REQUEST, Location.HEADER, Type.TEXT, "Content-Type", "multipart/form-data; boundary=" + BOUNDARY));
-//
-//				for (Parameter parameter : parameters) {
-//					if (parameter.getEnabled() && parameter.isBodyParameter() && parameter.getType().equals(Type.TEXT.name())) {
-//						addMultiparTextParameter(bos, parameter);
-//					} else if (parameter.getEnabled() && parameter.isBodyParameter() && parameter.getType().equals(Type.FILE.name())) {
-//						addMultiparFileParameter(bos, parameter);
-//					}
-//				}
-//				bos.write(new String(CLOSE_BOUNDARY + LINE_FEED).getBytes());
-//			}
-//			addHeaders(builder, parameters);
-//			bos.flush();
-//			response = builder.put(ClientResponse.class, bos.toByteArray());
-//		} catch (final Exception e) {
-//			Logger.error(e);
-//			Notifier.notifyError(e.getMessage());
-//			throw new ClientException(e.getMessage());
-//		} finally {
-//			client.destroy();
-//			if (bos != null) {
-//				try {
-//					bos.close();
-//				} catch (IOException e) {
-//					Logger.error(e);
-//					Notifier.notifyError(e.getMessage());
-//				}
-//			}
-//		}
-//		return response;
-//	}
-//
 //	private static ClientResponse patch(final Exchange exchange) throws ClientException {
 //
 //		ClientResponse response = null;
@@ -432,7 +412,7 @@ public class RestClient {
 		return bytes;
 	}
 
-    private static void addMultiparTextParameter(final ByteArrayOutputStream bos, final Parameter parameter) {
+    private static void addMultipartTextParameter(final ByteArrayOutputStream bos, final Parameter parameter) {
 
         try {
             bos.write(new String(END_BOUNDARY + LINE_FEED).getBytes());
@@ -445,7 +425,7 @@ public class RestClient {
         }
     }
 
-	private static void addMultiparFileParameter(final ByteArrayOutputStream bos, final Parameter parameter) {
+	private static void addMultipartFileParameter(final ByteArrayOutputStream bos, final Parameter parameter) {
 
 		try {
 			Path path = Paths.get(URI.create(parameter.getValue()));
