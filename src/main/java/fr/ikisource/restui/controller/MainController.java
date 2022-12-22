@@ -2,12 +2,10 @@ package fr.ikisource.restui.controller;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
-import java.time.Instant;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,13 +25,11 @@ import fr.ikisource.restui.controller.cellFactory.BaseNameCellFactory;
 import fr.ikisource.restui.controller.cellFactory.BaseUrlCellFactory;
 import fr.ikisource.restui.controller.cellFactory.RadioButtonCell;
 import fr.ikisource.restui.controller.cellFactory.TreeCellFactory;
-import fr.ikisource.restui.exception.ClientException;
 import fr.ikisource.restui.exception.NotFoundException;
 import fr.ikisource.restui.exception.TechnicalException;
 import fr.ikisource.restui.model.Application;
 import fr.ikisource.restui.model.BaseUrl;
 import fr.ikisource.restui.model.Endpoint;
-import fr.ikisource.restui.model.Exchange;
 import fr.ikisource.restui.model.Item;
 import fr.ikisource.restui.model.Parameter;
 import fr.ikisource.restui.model.Parameter.Direction;
@@ -380,18 +376,18 @@ public class MainController implements Initializable {
 
 		// connection timeout
 		connectionTimeout.setText(application.getConnectionTimeout().toString());
-//TODO		RestClient.setConnectionTimeout(application.getConnectionTimeout());
+		RestClient.setConnectionTimeout(application.getConnectionTimeout());
 		connectionTimeout.textProperty().addListener((observable, oldValue, newValue) -> {
 			if (newValue.matches("\\d+")) { // new value is an integer
 				Integer timeout = Integer.valueOf(newValue);
 				connectionTimeout.setText(timeout.toString());
 				application.setConnectionTimeout(timeout);
-//TODO				RestClient.setConnectionTimeout(timeout);
+				RestClient.setConnectionTimeout(timeout);
 			} else { // new value is not an integer
 				if (newValue.isEmpty()) {// empty value : reset to default value
 					connectionTimeout.setText(App.DEFAULT_CONNECTION_TIMEOUT.toString());
 					application.setConnectionTimeout(App.DEFAULT_CONNECTION_TIMEOUT);
-//TODO					RestClient.setConnectionTimeout(App.DEFAULT_CONNECTION_TIMEOUT);
+					RestClient.setConnectionTimeout(App.DEFAULT_CONNECTION_TIMEOUT);
 				} else {
 					connectionTimeout.setText(oldValue);
 				}
@@ -399,18 +395,18 @@ public class MainController implements Initializable {
 		});
 		// read timeout
 		readTimeout.setText(application.getReadTimeout().toString());
-//TODO		RestClient.setReadTimeout(application.getReadTimeout());
+		RestClient.setRequestTimeout(application.getReadTimeout());
 		readTimeout.textProperty().addListener((observable, oldValue, newValue) -> {
 			if (newValue.matches("\\d+")) { // new value is an integer
 				Integer timeout = Integer.valueOf(newValue);
 				readTimeout.setText(timeout.toString());
 				application.setReadTimeout(timeout);
-//TODO				RestClient.setReadTimeout(timeout);
+				RestClient.setRequestTimeout(timeout);
 			} else { // new value is not an integer
 				if (newValue.isEmpty()) {// empty value : reset to default value
 					readTimeout.setText(App.DEFAULT_READ_TIMEOUT.toString());
 					application.setReadTimeout(App.DEFAULT_READ_TIMEOUT);
-//TODO					RestClient.setReadTimeout(App.DEFAULT_READ_TIMEOUT);
+					RestClient.setRequestTimeout(App.DEFAULT_READ_TIMEOUT);
 				} else {
 					readTimeout.setText(oldValue);
 				}
