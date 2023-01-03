@@ -3,6 +3,7 @@ plugins {
     id 'application'
     id 'org.openjfx.javafxplugin' version '0.0.13'
     id 'org.beryx.jlink' version '2.25.0'
+    id 'com.gluonhq.gluonfx-gradle-plugin' version '1.0.15'
 }
 
 ext {
@@ -12,6 +13,7 @@ ext {
 group 'fr.ikisource.restui'
 version '1.0.0'
 
+mainClassName = 'fr.ikisource.restui.gui.RestUiApp'
 
 //def jdk = System.getProperty('java.home')
 //def moduleName = 'fr.ikisource.restui'
@@ -47,6 +49,11 @@ compileJava {
     options.encoding = 'UTF-8'
 }
 
+jar {
+    manifest {
+        attributes('Main-Class': 'fr.ikisource.restui.gui.RestUiApp')
+    }
+}
 
 tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
@@ -62,6 +69,10 @@ jlink {
 
 test {
     useJUnitPlatform()
+}
+
+gluonfx {
+    graalvmHome = '/opt/graalvm/ce-java17-22.1.0.1/'
 }
 
 
