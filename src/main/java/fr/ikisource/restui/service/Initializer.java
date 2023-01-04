@@ -18,7 +18,7 @@ public interface Initializer {
 
 	private static void createDefaultApplicationFile() {
 
-		File applicationFile = new File(App.APLICATION_FILE);
+		File applicationFile = new File(App.APPLICATION_FILE);
 		if (!applicationFile.exists()) {
 			ApplicationService.createDefaultApplicationFile();
 		}

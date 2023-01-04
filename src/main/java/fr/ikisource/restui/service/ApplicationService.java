@@ -24,7 +24,7 @@ public class ApplicationService {
 		SAXBuilder saxBuilder = new SAXBuilder();
 
 		try {
-			Document document = saxBuilder.build(App.APLICATION_FILE);
+			Document document = saxBuilder.build(App.APPLICATION_FILE);
 			Element applicationElement = document.getRootElement();
 			Element lastProjectUriElement = applicationElement.getChild("lastProjectUri");
 			application.setLastProjectUri(lastProjectUriElement.getValue());
@@ -102,7 +102,7 @@ public class ApplicationService {
 			
 			XMLOutputter xmlOutputter = new XMLOutputter(Format.getPrettyFormat());
 			Document document = new Document(rootElement);
-			File applicationFile = new File(App.APLICATION_FILE);
+			File applicationFile = new File(App.APPLICATION_FILE);
 			try (FileOutputStream fileOutputStream = new FileOutputStream(applicationFile)) {
 				xmlOutputter.output(document, fileOutputStream);
 			} catch (final IOException e) {
@@ -131,7 +131,7 @@ public class ApplicationService {
 
 		XMLOutputter xmlOutputter = new XMLOutputter(Format.getPrettyFormat());
 		Document document = new Document(rootElement);
-		File applicationFile = new File(App.APLICATION_FILE);
+		File applicationFile = new File(App.APPLICATION_FILE);
 		
 		if (!applicationFile.getParentFile().exists()) {
 			applicationFile.getParentFile().mkdir();

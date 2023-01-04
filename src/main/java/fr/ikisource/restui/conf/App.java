@@ -10,7 +10,7 @@ public interface App {
 
 	// application
 	String TITLE = "RestUI";
-	String APLICATION_FILE = getApplicationHome() + "/" + "application.xml";
+	String APPLICATION_FILE = getApplicationHome() + "/" + "application.xml";
 
 	// FXML
 	String FXML_LOCATION = "/fxml";

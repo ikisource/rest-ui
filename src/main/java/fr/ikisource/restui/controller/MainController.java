@@ -155,7 +155,6 @@ public class MainController implements Initializable {
 
 	int index = 0;
 
-	@SuppressWarnings("preview")
 	@Override
 	public void initialize(final URL location, final ResourceBundle resources) {
 
@@ -395,18 +394,18 @@ public class MainController implements Initializable {
 		});
 		// read timeout
 		readTimeout.setText(application.getReadTimeout().toString());
-		RestClient.setRequestTimeout(application.getReadTimeout());
+//		RestClient.setRequestTimeout(application.getReadTimeout());
 		readTimeout.textProperty().addListener((observable, oldValue, newValue) -> {
 			if (newValue.matches("\\d+")) { // new value is an integer
 				Integer timeout = Integer.valueOf(newValue);
 				readTimeout.setText(timeout.toString());
 				application.setReadTimeout(timeout);
-				RestClient.setRequestTimeout(timeout);
+//				RestClient.setRequestTimeout(timeout);
 			} else { // new value is not an integer
 				if (newValue.isEmpty()) {// empty value : reset to default value
 					readTimeout.setText(App.DEFAULT_READ_TIMEOUT.toString());
 					application.setReadTimeout(App.DEFAULT_READ_TIMEOUT);
-					RestClient.setRequestTimeout(App.DEFAULT_READ_TIMEOUT);
+//					RestClient.setRequestTimeout(App.DEFAULT_READ_TIMEOUT);
 				} else {
 					readTimeout.setText(oldValue);
 				}
@@ -578,7 +577,7 @@ public class MainController implements Initializable {
 				final File file = fileChooser.showSaveDialog(rootNode.getScene().getWindow());
 
 				if (file != null) {
-					if (file.equals(new File(App.APLICATION_FILE))) {
+					if (file.equals(new File(App.APPLICATION_FILE))) {
 						final Alert alert = new Alert(AlertType.ERROR);
 						alert.setTitle("Save the project");
 						alert.setHeaderText("The application file cannot be overriden.");
@@ -631,7 +630,7 @@ public class MainController implements Initializable {
 
 			final File file = fileChooser.showSaveDialog(rootNode.getScene().getWindow());
 			if (file != null) {
-				if (file.equals(new File(App.APLICATION_FILE))) {
+				if (file.equals(new File(App.APPLICATION_FILE))) {
 					final Alert alert = new Alert(AlertType.ERROR);
 					alert.setTitle("Save the project as");
 					alert.setHeaderText("The application file cannot be overriden.");

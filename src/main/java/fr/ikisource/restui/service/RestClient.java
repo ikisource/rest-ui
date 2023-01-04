@@ -1,8 +1,10 @@
 package fr.ikisource.restui.service;
 
 import java.io.*;
+import java.net.ConnectException;
 import java.net.URI;
 import java.net.URLEncoder;
+import java.net.http.HttpConnectTimeoutException;
 import java.net.http.HttpRequest;
 import java.net.http.HttpRequest.BodyPublishers;
 import java.net.http.HttpResponse;
@@ -15,7 +17,9 @@ import java.util.stream.Collectors;
 import java.net.http.HttpClient;
 
 import fr.ikisource.restui.conf.App;
+import fr.ikisource.restui.controller.MainController;
 import fr.ikisource.restui.exception.ClientException;
+import fr.ikisource.restui.model.Application;
 import fr.ikisource.restui.model.Exchange;
 import fr.ikisource.restui.model.Parameter;
 import fr.ikisource.restui.model.Parameter.Direction;
@@ -30,9 +34,11 @@ public class RestClient {
     private static final String BOUNDARY = "oma";
     private static final String END_BOUNDARY = "--" + BOUNDARY;
     private static final String CLOSE_BOUNDARY = "--" + BOUNDARY + "--";
-    private static final HttpClient.Builder client2 = HttpClient.newBuilder();
-    private static HttpClient client = HttpClient.newHttpClient();
-    private static Integer requestTimeout = App.DEFAULT_READ_TIMEOUT;
+
+//    private static Application application;
+    private static HttpClient client = HttpClient.newBuilder()
+            .connectTimeout(Duration.ofMillis(MainController.application.getConnectionTimeout()))
+            .build();
 
     public static HttpResponse<byte[]> execute(final String method, final Exchange exchange) throws ClientException {
 
@@ -47,32 +53,32 @@ public class RestClient {
             }
         } catch (Exception e) {
             Logger.error(e);
-            Notifier.notifyError(e.getMessage());
+            if (e instanceof ConnectException || e instanceof HttpConnectTimeoutException) {
+                Notifier.notifyError("Can't connect to server");
+            } else {
+                Notifier.notifyError(e.getMessage());
+            }
             throw new ClientException(e.getMessage());
         }
         return response;
     }
 
     public static void setConnectionTimeout(Integer duration) {
-        if (duration > 0) {
-            client = HttpClient.newBuilder()
-                    .connectTimeout(Duration.ofMillis(duration))
-                    .build();
-        } else {
-            client = HttpClient.newBuilder()
-                    .build();
-        }
+        client = HttpClient.newBuilder()
+                .connectTimeout(Duration.ofMillis(duration))
+                .build();
     }
 
-    public static void setRequestTimeout(final Integer duration) {
-        requestTimeout = duration == null ? App.DEFAULT_READ_TIMEOUT : duration;
-    }
+//    public static void setRequestTimeout(final Integer duration) {
+//        requestTimeout = duration == null ? App.DEFAULT_READ_TIMEOUT : duration;
+//    }
 
     private static HttpRequest.Builder requestBuilder(Exchange exchange) {
         HttpRequest.Builder builder = HttpRequest.newBuilder()
                 .version(HttpClient.Version.HTTP_2)
-                .uri(exchange.getEncodedUri())
-                .timeout(Duration.ofMillis(requestTimeout));
+// TODO               .uri(exchange.getEncodedUri())
+                .uri(URI.create("http://10.255.255.1"))
+                .timeout(Duration.ofMillis(MainController.application.getReadTimeout()));
         if (exchange.requestHeaders().length >= 2) {
             builder.headers(exchange.requestHeaders());
         }
@@ -84,6 +90,8 @@ public class RestClient {
         HttpRequest.Builder builder = requestBuilder(exchange)
                 .GET();
         HttpRequest request = builder.build();
+        System.out.println("timeout = " + client.connectTimeout());
+        System.out.println("request timeout = " + request.timeout());
         return client.send(request, HttpResponse.BodyHandlers.ofByteArray());
     }
 

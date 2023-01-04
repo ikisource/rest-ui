@@ -387,8 +387,7 @@ public class EndpointController implements Initializable {
 						tooltip = new Tooltip("Timeout");
 					}
 				} else {
-// TODO					ClientResponse.Status status = ClientResponse.Status.fromStatusCode(currentExchange.getStatus());
-					tooltip = new Tooltip("status (à compléter)");
+					tooltip = new Tooltip(String.valueOf(currentExchange.getStatus()));
 				}
 			}
 			responseStatus.setTooltip(tooltip);
